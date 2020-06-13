@@ -459,15 +459,7 @@ void move(char keycode) {
 			enterScene(clearStage);
 			stopSound(bgm);
 			playSound(clearsound);
-		}
-		curStage++;
-		if (curStage < TOTAL_STAGE_NUM)
-		{
-			//성공시 stageButton을 clear이미지로 변경
-			setObjectImage(stageButton[curStage-1], "Images/clear.png");
-			enterScene(selectStage);			
-			playSound(oneclear, false);
-		}		
+		}			
 	}
 }
 
@@ -659,6 +651,7 @@ int main() {
 	quitbutton = createObject("Images/quit.png");
 	locateObject(quitbutton, clearStage, 505, 130);
 	showObject(quitbutton);
+		
 
 	playing = false;
 	curStage = 0;
