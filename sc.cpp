@@ -328,8 +328,7 @@ bool isStageClear(char stageNum) {
 }
 
 void initStage(char stageNum) {
-	playing = false;
-
+	
 	setObjectImage(player[stageNum],"Images/Player3.png");
 
 	char count[TOTAL_OBJECT_TYPE];
@@ -385,8 +384,7 @@ void initStage(char stageNum) {
 		printf("\n");
 	}
 	printf("box num : %d\n", numOfObject[curStage][BOX]);
-
-	playing = true;
+		
 }
 
 // 
@@ -396,6 +394,9 @@ void move(char keycode) {
 	char mPlayerY = playerY[curStage] + dy[code];
 	char mvObjType = moveableObjBoard[curStage][mPlayerY][mPlayerX];
 	char fxObjType = fixedObjBoard[curStage][mPlayerY][mPlayerX];
+
+	// 이미 클리어 한 경우
+	if (stageCleared[curStage]) return;
 
 	// 플레이어 바라보는 방향 바꾸기
 	char s1[20] = "Images/Player";
@@ -448,9 +449,8 @@ void move(char keycode) {
 		playing = false;
 		stageCleared[curStage] = true;
 		setObjectImage(stageButton[curStage], "Images/clear.png");
-		enterScene(selectStage);
-		playing = true;	
-
+		enterScene(selectStage);		
+		
 		bool allCleard = true;
 		for (int i = 0; i < TOTAL_STAGE_NUM; i++) {
 			if (stageCleared[i] == false) allCleard = false;			
@@ -465,8 +465,7 @@ void move(char keycode) {
 		{
 			//성공시 stageButton을 clear이미지로 변경
 			setObjectImage(stageButton[curStage-1], "Images/clear.png");
-			enterScene(selectStage);
-			playing = true;
+			enterScene(selectStage);			
 			playSound(oneclear, false);
 		}		
 	}
@@ -476,9 +475,11 @@ void move(char keycode) {
 void mouseCallback(ObjectID object, int x, int y, MouseAction action) {
 	for (int i = 0; i < TOTAL_STAGE_NUM; i++) {
 		if (object == stageButton[i]) {
-			curStage = i;
-			enterScene(sceneStage[i]);
-			playing = true;
+			if (stageCleared[i] == false) {
+				curStage = i;
+				enterScene(sceneStage[i]);
+				playing = true;
+			}			
 		}
 		else if (object == backButton[i]) {
 			playing = false;
@@ -497,12 +498,14 @@ void keyboardCallback(KeyCode code, KeyState state)
 	// 누르는 동작에만 반응. 떼는것엔 반응 X
 	if (state == KeyState::KEYBOARD_PRESSED && playing && 0<=curStage && curStage<TOTAL_STAGE_NUM) {
 		if (code >= 82 && code <= 85) {		// 방향키
-			
+			printf("%d\n", playing);
 			move(code);
 
 		}
 		else if (code == 75 || code == 18) {	// SPACEBAR or 'R'
+			playing = false;
 			initStage(curStage);
+			playing = true;
 		}
 		else {
 			printf("undefined keycode : %d\n", code);
